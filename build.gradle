@@ -1,20 +1,13 @@
 buildscript {
-    ext {
-        springBootVersion = '2.0.0.RELEASE'
-    }
     repositories {
         mavenCentral()
-        mavenLocal()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        //mavenLocal()
     }
     dependencies {
-        classpath("net.ltgt.gradle:gradle-apt-plugin:0.15")
+        classpath("net.ltgt.gradle:gradle-apt-plugin:${gradleAptPluginVersion}")
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
-
 
 plugins {
     //See: https://github.com/gradle/gradle/issues/1697 - version cannot be expanded with variables
@@ -36,9 +29,8 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'net.ltgt.apt'
     dependencies {
-        //compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
         testCompile('org.springframework.boot:spring-boot-starter-test')
-        compileOnly('org.projectlombok:lombok:1.16.20')
-        annotationProcessor("org.projectlombok:lombok:1.16.20")
+        compileOnly("org.projectlombok:lombok:${lombokVersion}")
+        annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     }
 }
