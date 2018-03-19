@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -12,8 +14,8 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/asyncdemo")
 @Slf4j
 public class AsyncConntroller {
-
-    public static final int sleepMillis = 1000;
+    private static final Timer timer = new Timer();
+    private static final int sleepMillis = 1000;
 
     @RequestMapping("/sync")
     public AThing GetValueSync() throws InterruptedException {
@@ -23,25 +25,25 @@ public class AsyncConntroller {
 
     @RequestMapping("/async")
     public CompletableFuture<AThing> GetValueAsync() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Thread.sleep(sleepMillis);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        CompletableFuture<AThing> future = new CompletableFuture<>();
+        TimerTask task = new TimerTask() {
+            public void run() {
+                future.complete(AThing.builder().value("hello").build());
             }
-            return AThing.builder().value("hello").build();
-        });
+        };
+        timer.schedule(task, sleepMillis);
+        return future;
     }
 
     @RequestMapping("/badasync")
     public AThing GetValueAsyncBad() throws ExecutionException, InterruptedException {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Thread.sleep(sleepMillis);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        CompletableFuture<AThing> future = new CompletableFuture<>();
+        TimerTask task = new TimerTask() {
+            public void run() {
+                future.complete(AThing.builder().value("hello").build());
             }
-            return AThing.builder().value("hello").build();
-        }).get();
+        };
+        timer.schedule(task, sleepMillis);
+        return future.get();
     }
 }
